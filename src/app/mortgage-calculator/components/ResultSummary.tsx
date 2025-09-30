@@ -23,7 +23,7 @@ export default function ResultSummary({
   hoa
 }: Props) {
   return (
-    <div className="bg-gray-50 p-6 rounded-lg shadow-md w-full mb-6">
+    <div className="bg-gray-50 p-6 rounded-lg shadow-md mb-6">
       <h2 className="text-xl font-bold mb-4">Summary</h2>
 
       <div className="space-y-2 text-gray-700">

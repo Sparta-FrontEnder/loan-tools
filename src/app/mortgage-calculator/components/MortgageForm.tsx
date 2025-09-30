@@ -49,7 +49,7 @@ export default function MortgageForm({
         e.preventDefault();
         onCalculate();
       }}
-      className="w-full md:w-1/2 p-6 border-r"
+      className="p-6 "
     >
       <h2 className="text-xl font-bold mb-4">Mortgage Details</h2>
 

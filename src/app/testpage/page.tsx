@@ -1,13 +1,13 @@
 "use client";
 import { useState, useEffect } from "react";
-import MortgageForm from "./components/MortgageForm";
-import PaymentChart from "./components/PaymentChart";
-import ResultSummary from "./components/ResultSummary";
-import Navbar from "./navigation/Navbar";
-import { calculateMonthlyPI, calculatePMI } from "./utils/mortgage";
-import AmortizationTable from "./components/AmortizationTable";
+import MortgageForm from "../mortgage-calculator/components/MortgageForm";
+import PaymentChart from "../mortgage-calculator/components/PaymentChart";
+import ResultSummary from "../mortgage-calculator/components/ResultSummary";
+import Navbar from "../mortgage-calculator/navigation/Navbar";
+import { calculateMonthlyPI, calculatePMI } from "../mortgage-calculator/utils/mortgage";
+import AmortizationTable from "../mortgage-calculator/components/AmortizationTable";
 // 导入州税率 JSON
-import propertyTaxRates from "./utils/propertyTaxRates.json";
+import propertyTaxRates from "../mortgage-calculator/utils/propertyTaxRates.json";
 
 export default function MortgageCalculatorPage() {
   // 基础状态：⚡ 改成字符串
@@ -71,8 +71,42 @@ export default function MortgageCalculatorPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center">
-     <Navbar />
+    // <div className="grid grid-cols-2  gap-x-10">
+    //     <div className="row-span-3 flex justify-center items-center">
+    //         <table>
+    //           <thead>
+    //             <tr>
+    //               <th className="border border-gray-300">
+    //                 title
+    //               </th>
+    //             </tr>
+    //           </thead>
+    //           <tbody>
+    //             <tr>
+    //               <td>col-1</td>
+    //             </tr>
+    //             <tr>
+    //               <td>col-2</td>
+    //             </tr>
+    //             <tr>
+    //               <td>col-3</td>
+    //             </tr>
+    //             <tr>
+    //               <td>col-4</td>
+    //             </tr>
+    //           </tbody>
+    //         </table>
+    //     </div>
+    //     <div className="flex pb-10">
+    //       <img src="https://images.freeimages.com/images/large-previews/410/laptop-motherboard-1243423.jpg?fmt=webp&h=350" alt="" />
+        
+    //     </div>
+    //     <div className="flex">
+    //       <img src="https://images.freeimages.com/images/large-previews/922/colorful-circuit-board-0410-5708914.jpg?fmt=webp&h=350" alt="" />
+    //     </div>
+    // </div>
+  <div className="min-h-screen flex flex-col items-center justify-center">
+    <Navbar />
     {/* 左面是表格 右面是 图饼 + summary*/}
     <div className="grid grid-cols-2">
       <div className="rounded-lg">

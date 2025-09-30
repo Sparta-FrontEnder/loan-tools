@@ -50,7 +50,7 @@ export default function AmortizationTable({
   return (
     <div className="mt-6 overflow-x-auto">
       <h2 className="text-lg font-semibold mb-4">Amortization Schedule (Yearly)</h2>
-      <table className="min-w-full border border-gray-200 text-sm">
+      <table className="min-w-full border  text-sm">
         <thead className="bg-gray-100">
           <tr>
             <th className="border px-2 py-1">Year</th>
