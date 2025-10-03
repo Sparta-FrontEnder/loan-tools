@@ -74,7 +74,7 @@ export default function MortgageCalculatorPage() {
     <div className="min-h-screen flex flex-col items-center justify-center">
      <Navbar />
     {/* 左面是表格 右面是 图饼 + summary*/}
-    <div className="grid grid-cols-2">
+    <div className="grid grid-cols-1 md:grid-cols-2">
       <div className="rounded-lg">
         {/* 左边表单 */}
         <MortgageForm
