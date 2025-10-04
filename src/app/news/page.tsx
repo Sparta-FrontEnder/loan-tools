@@ -15,7 +15,9 @@ async function getNewsList() {
       categories[]->{
         title
       }
-    }`
+    }`,
+    {}, // 变量
+    { next: { revalidate: 60 } } // ISR: 每60秒重新生成
   );
 }
 

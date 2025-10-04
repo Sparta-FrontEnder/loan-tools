@@ -10,7 +10,12 @@ async function getPosts() {
     excerpt,
     publishedAt,
     "imageUrl": mainImage.asset->url
-  }`)
+    }`,
+    {},
+    {
+        next: { revalidate: 60 } // ISR: 每60秒重新拉Sanity数据
+    }
+    )
 }
 
 export default async function BlogPage() {
