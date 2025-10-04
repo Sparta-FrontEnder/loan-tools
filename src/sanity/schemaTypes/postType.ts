@@ -1,5 +1,5 @@
 import {DocumentTextIcon} from '@sanity/icons'
-import {defineArrayMember, defineField, defineType} from 'sanity'
+import {defineField, defineType} from 'sanity'
 
 export const postType = defineType({
   name: 'post',
@@ -9,13 +9,18 @@ export const postType = defineType({
   fields: [
     defineField({
       name: 'title',
-      type: 'string',
+      title: 'Title',
+      type: 'object',
+      fields: [
+        { name: 'en', type: 'string', title: 'English' },
+        { name: 'zh', type: 'string', title: '中文' },
+      ],
     }),
     defineField({
       name: 'slug',
       type: 'slug',
       options: {
-        source: 'title',
+        source: 'title.en', // 默认用英文标题生成 slug
       },
     }),
     defineField({
@@ -26,9 +31,7 @@ export const postType = defineType({
     defineField({
       name: 'mainImage',
       type: 'image',
-      options: {
-        hotspot: true,
-      },
+      options: { hotspot: true },
       fields: [
         defineField({
           name: 'alt',
@@ -40,7 +43,7 @@ export const postType = defineType({
     defineField({
       name: 'categories',
       type: 'array',
-      of: [defineArrayMember({type: 'reference', to: {type: 'category'}})],
+      of: [{type: 'reference', to: {type: 'category'}}],
     }),
     defineField({
       name: 'publishedAt',
@@ -48,18 +51,23 @@ export const postType = defineType({
     }),
     defineField({
       name: 'body',
-      type: 'blockContent',
+      title: 'Body',
+      type: 'object',
+      fields: [
+        { name: 'en', type: 'blockContent', title: 'English' },
+        { name: 'zh', type: 'blockContent', title: '中文' },
+      ],
     }),
   ],
   preview: {
     select: {
-      title: 'title',
+      title: 'title.en',
       author: 'author.name',
       media: 'mainImage',
     },
     prepare(selection) {
       const {author} = selection
-      return {...selection, subtitle: author && `by ${author}`}
+      return {...selection, subtitle: author ? `by ${author}` : ''}
     },
   },
 })

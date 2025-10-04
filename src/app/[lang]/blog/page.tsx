@@ -1,33 +1,28 @@
-"use client";
+import { client } from "@/sanity/lib/client"
+import Navbar from "../../mortgage-calculator/navigation/Navbar"
+import Link from "next/link"
 
-import { useState, useEffect } from "react";
-import { client } from "@/sanity/lib/client";
-import Navbar from "../mortgage-calculator/navigation/Navbar";
-import Link from "next/link";
-
-async function getPosts() {
+// 获取博客列表，按语言过滤
+async function getPosts(lang: string) {
   return client.fetch(
-    `*[_type == "post"] | order(publishedAt desc){
+    `*[_type == "post" && language == $lang] | order(publishedAt desc){
       title,
       slug,
+      excerpt,
       publishedAt,
-      "imageUrl": mainImage.asset->url,
-      body
+      "imageUrl": mainImage.asset->url
     }`,
-    {},
-    {
-      next: { revalidate: 60 }, // ISR: 每60秒重新拉 Sanity 数据
-    }
-  );
+    { lang }, // 传参
+    { next: { revalidate: 60 } }
+  )
 }
 
-export default function BlogPage() {
-  const [posts, setPosts] = useState<any[]>([]);
-  const [lang, setLang] = useState<"en" | "zh">("en"); // 默认英文
-
-  useEffect(() => {
-    getPosts().then((data) => setPosts(data));
-  }, []);
+export default async function BlogPage({
+  params,
+}: {
+  params: { lang: string }
+}) {
+  const posts: any[] = await getPosts(params.lang)
 
   return (
     <div>
@@ -36,31 +31,11 @@ export default function BlogPage() {
         
         {/* 左侧内容：文章列表 */}
         <div className="lg:col-span-3">
-          {/* 语言切换按钮 */}
-          <div className="flex justify-end mb-6">
-            <button
-              onClick={() => setLang("en")}
-              className={`px-4 py-2 rounded-l-lg border ${
-                lang === "en" ? "bg-blue-600 text-white" : "bg-gray-200"
-              }`}
-            >
-              English
-            </button>
-            <button
-              onClick={() => setLang("zh")}
-              className={`px-4 py-2 rounded-r-lg border ${
-                lang === "zh" ? "bg-blue-600 text-white" : "bg-gray-200"
-              }`}
-            >
-              中文
-            </button>
-          </div>
-
           {/* 搜索框 */}
           <div className="mb-6">
             <input
               type="text"
-              placeholder={lang === "en" ? "Search for articles..." : "搜索文章..."}
+              placeholder={params.lang === "zh" ? "搜索文章..." : "Search for articles..."}
               className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
           </div>
@@ -75,7 +50,7 @@ export default function BlogPage() {
                 {post.imageUrl && (
                   <img
                     src={post.imageUrl}
-                    alt={post.title?.[lang] || ""}
+                    alt={post.title}
                     width={600}
                     height={400}
                     className="w-full h-48 object-cover"
@@ -83,23 +58,25 @@ export default function BlogPage() {
                 )}
                 <div className="p-4">
                   <Link
-                    href={`/blog/${post.slug.current}`}
+                    href={`/${params.lang}/blog/${post.slug.current}`}
                     className="text-xl font-semibold text-gray-900 hover:text-blue-600"
                   >
-                    {post.title?.[lang] || post.title?.en}
+                    {post.title}
                   </Link>
                   <p className="text-sm text-gray-500 mt-1">
                     {new Date(post.publishedAt).toDateString()}
                   </p>
-                  <p className="text-gray-700 mt-2 line-clamp-3">
-                    {/* 摘要这里可以从 body[lang] 里提取前几行 */}
-                    {post.body?.[lang]
-                      ? post.body[lang][0]?.children[0]?.text
-                      : post.body?.en?.[0]?.children[0]?.text}
-                  </p>
+                  <p className="text-gray-700 mt-2 line-clamp-3">{post.excerpt}</p>
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* Load More 按钮 */}
+          <div className="flex justify-center mt-6">
+            <button className="px-6 py-2 bg-green-600 text-white rounded-full hover:bg-green-700">
+              {params.lang === "zh" ? "加载更多" : "Load More"}
+            </button>
           </div>
         </div>
 
@@ -108,7 +85,7 @@ export default function BlogPage() {
           {/* Popular Articles */}
           <div className="bg-white p-4 rounded-lg shadow">
             <h2 className="text-lg font-bold mb-4">
-              {lang === "en" ? "Popular Articles" : "热门文章"}
+              {params.lang === "zh" ? "热门文章" : "Popular Articles"}
             </h2>
             <ul className="space-y-3">
               {posts.slice(0, 3).map((post) => (
@@ -116,7 +93,7 @@ export default function BlogPage() {
                   {post.imageUrl && (
                     <img
                       src={post.imageUrl}
-                      alt={post.title?.[lang] || ""}
+                      alt={post.title}
                       width={60}
                       height={60}
                       className="w-12 h-12 object-cover rounded"
@@ -124,14 +101,12 @@ export default function BlogPage() {
                   )}
                   <div>
                     <Link
-                      href={`/blog/${post.slug.current}`}
+                      href={`/${params.lang}/blog/${post.slug.current}`}
                       className="font-medium text-gray-800 hover:text-blue-600"
                     >
-                      {post.title?.[lang] || post.title?.en}
+                      {post.title}
                     </Link>
-                    <p className="text-xs text-gray-500">
-                      {lang === "en" ? "5 min read" : "阅读时间 5 分钟"}
-                    </p>
+                    <p className="text-xs text-gray-500">5 min read</p>
                   </div>
                 </li>
               ))}
@@ -141,17 +116,17 @@ export default function BlogPage() {
           {/* Categories */}
           <div className="bg-white p-4 rounded-lg shadow">
             <h2 className="text-lg font-bold mb-4">
-              {lang === "en" ? "Categories" : "分类"}
+              {params.lang === "zh" ? "分类" : "Categories"}
             </h2>
             <ul className="space-y-2 text-gray-700">
-              <li>{lang === "en" ? "Real Estate" : "房地产"}</li>
-              <li>{lang === "en" ? "Investing" : "投资"}</li>
-              <li>{lang === "en" ? "Mortgages" : "按揭贷款"}</li>
-              <li>{lang === "en" ? "Economics" : "经济学"}</li>
+              <li>{params.lang === "zh" ? "房地产" : "Real Estate"}</li>
+              <li>{params.lang === "zh" ? "投资" : "Investing"}</li>
+              <li>{params.lang === "zh" ? "房贷" : "Mortgages"}</li>
+              <li>{params.lang === "zh" ? "经济" : "Economics"}</li>
             </ul>
           </div>
         </div>
       </div>
     </div>
-  );
+  )
 }
