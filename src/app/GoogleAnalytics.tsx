@@ -4,7 +4,7 @@ import Script from "next/script";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 
-// 声明 window.gtag，防止 TypeScript 报错
+// 防止 TS 报错
 declare global {
   interface Window {
     gtag: (...args: any[]) => void;
@@ -15,8 +15,8 @@ export function GoogleAnalytics() {
   const pathname = usePathname();
 
   useEffect(() => {
-    if (typeof window.gtag !== "undefined") {
-      window.gtag("config", "G-Z59DMQHZ2X", {
+    if (typeof window !== "undefined" && typeof window.gtag === "function") {
+      window.gtag("event", "page_view", {
         page_path: pathname,
       });
     }
@@ -24,18 +24,17 @@ export function GoogleAnalytics() {
 
   return (
     <>
+      {/* 加载 GA 脚本 */}
       <Script
         src="https://www.googletagmanager.com/gtag/js?id=G-Z59DMQHZ2X"
         strategy="afterInteractive"
       />
-      <Script id="google-analytics" strategy="afterInteractive">
+      <Script id="ga4-init" strategy="afterInteractive">
         {`
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
           gtag('js', new Date());
-          gtag('config', 'G-Z59DMQHZ2X', {
-            page_path: window.location.pathname,
-          });
+          gtag('config', 'G-Z59DMQHZ2X');
         `}
       </Script>
     </>
