@@ -1,12 +1,51 @@
 "use client";
 
 import { useState } from "react";
-import { PortableText } from "@portabletext/react";
+import { PortableText, PortableTextComponents } from "@portabletext/react";
 import Navbar from "@/app/mortgage-calculator/navigation/Navbar";
 import Link from "next/link";
 
 export default function BlogPostContent({ post }: { post: any }) {
   const [lang, setLang] = useState<"en" | "zh">("en");
+
+  // ✅ PortableText 自定义渲染配置
+  const components: PortableTextComponents = {
+    types: {
+      // ✅ 渲染 HTML Block
+      html: ({ value }) => (
+        <div
+          className="custom-html"
+          dangerouslySetInnerHTML={{ __html: value.code }}
+        />
+      ),
+    },
+    marks: {
+      // ✅ 自定义 link mark
+      link: ({ children, value }) => (
+        <a
+          href={value.href}
+          title={value.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-600 underline hover:text-blue-800"
+        >
+          {children}
+        </a>
+      ),
+      // ✅ 自定义 tooltip mark（你存 span 的情况）
+      tooltip: ({ children, value }) => (
+        <span
+          title={value.title}
+          style={{
+            borderBottom: "1px dashed #999",
+            cursor: "help",
+          }}
+        >
+          {children}
+        </span>
+      ),
+    },
+  };
 
   return (
     <div>
@@ -83,57 +122,13 @@ export default function BlogPostContent({ post }: { post: any }) {
               {/* 正文 */}
               <div className="prose prose-lg max-w-none text-gray-700 space-y-6">
                 {post.body?.[lang] ? (
-                  <PortableText value={post.body[lang]} />
+                  <PortableText value={post.body[lang]} components={components} />
                 ) : (
                   <p>No content</p>
                 )}
               </div>
-
-              {/* CTA 区块 */}
-              <div className="mt-16 bg-blue-50 p-8 rounded-xl text-center">
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                  {lang === "en" ? "Ready to Invest?" : "准备好投资了吗？"}
-                </h2>
-                <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-                  {lang === "en"
-                    ? "Calculate your potential mortgage payments and explore financing options to take the next step in your real estate journey."
-                    : "计算您的按揭付款并探索融资方案，迈出房地产投资的下一步。"}
-                </p>
-                <Link href="/mortgage-calculator">
-                  <button className="px-6 py-3 text-base font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl">
-                    {lang === "en"
-                      ? "Try our Mortgage Calculator"
-                      : "试试我们的按揭计算器"}
-                  </button>
-                </Link>
-              </div>
             </div>
           </article>
-
-          {/* 侧边栏 */}
-          <aside className="w-full lg:w-1/3 lg:sticky top-24 self-start">
-            <div className="space-y-8">
-              {/* Related Articles */}
-              <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-                <h3 className="text-lg font-bold text-gray-900 mb-4">
-                  {lang === "en" ? "Related Articles" : "相关文章"}
-                </h3>
-                <div className="space-y-4">
-                  <a className="flex items-center gap-4 group" href="#">
-                    <div className="w-24 h-16 bg-gray-200 rounded-lg"></div>
-                    <div>
-                      <p className="font-semibold text-gray-800 group-hover:text-blue-600 transition-colors line-clamp-2">
-                        Example link
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        {lang === "en" ? "Category" : "分类"}
-                      </p>
-                    </div>
-                  </a>
-                </div>
-              </div>
-            </div>
-          </aside>
         </div>
       </main>
     </div>

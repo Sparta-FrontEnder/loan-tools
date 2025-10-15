@@ -1,5 +1,5 @@
 import { client } from "@/sanity/lib/client";
-import BlogPostContent from "./BlogPostContent"; // 引入你的 client 组件
+import BlogPostContent from "./BlogPostContent";
 
 async function getPost(slug: string) {
   return client.fetch(
@@ -18,15 +18,14 @@ async function getPost(slug: string) {
 export default async function BlogPostPage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: { slug: string };
 }) {
-  const { slug } = await params;  // ✅ 解 Promise
+  const { slug } = params;   // ✅ 正确，不要 await
   const post = await getPost(slug);
 
   if (!post) {
     return <div className="p-6 text-center text-gray-500">Post not found</div>;
   }
 
-  // ✅ 把数据传给 Client Component
   return <BlogPostContent post={post} />;
 }

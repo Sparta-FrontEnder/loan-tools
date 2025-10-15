@@ -1,5 +1,5 @@
-import {DocumentTextIcon} from '@sanity/icons'
-import {defineField, defineType} from 'sanity'
+import { DocumentTextIcon } from '@sanity/icons'
+import { defineField, defineType } from 'sanity'
 
 export const postType = defineType({
   name: 'post',
@@ -26,7 +26,7 @@ export const postType = defineType({
     defineField({
       name: 'author',
       type: 'reference',
-      to: {type: 'author'},
+      to: { type: 'author' },
     }),
     defineField({
       name: 'mainImage',
@@ -37,25 +37,34 @@ export const postType = defineType({
           name: 'alt',
           type: 'string',
           title: 'Alternative text',
-        })
-      ]
+        }),
+      ],
     }),
     defineField({
       name: 'categories',
       type: 'array',
-      of: [{type: 'reference', to: {type: 'category'}}],
+      of: [{ type: 'reference', to: { type: 'category' } }],
     }),
     defineField({
       name: 'publishedAt',
       type: 'datetime',
     }),
+    // ✅ 双语正文 + 支持 blockContentType（含 HTML 块）
     defineField({
       name: 'body',
       title: 'Body',
       type: 'object',
       fields: [
-        { name: 'en', type: 'blockContent', title: 'English' },
-        { name: 'zh', type: 'blockContent', title: '中文' },
+        {
+          name: 'en',
+          type: 'blockContent',
+          title: 'English',
+        },
+        {
+          name: 'zh',
+          type: 'blockContent',
+          title: '中文',
+        },
       ],
     }),
   ],
@@ -66,8 +75,8 @@ export const postType = defineType({
       media: 'mainImage',
     },
     prepare(selection) {
-      const {author} = selection
-      return {...selection, subtitle: author ? `by ${author}` : ''}
+      const { author } = selection
+      return { ...selection, subtitle: author ? `by ${author}` : '' }
     },
   },
 })

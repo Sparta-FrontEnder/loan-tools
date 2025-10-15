@@ -9,7 +9,7 @@ async function getPosts() {
   return client.fetch(
     `*[_type == "post"] | order(publishedAt desc){
       title,
-      slug,
+      "slug": slug.current,        // ✅ 直接取字符串
       publishedAt,
       "imageUrl": mainImage.asset->url,
       body
@@ -69,7 +69,7 @@ export default function BlogPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {posts.map((post) => (
               <div
-                key={post.slug.current}
+                key={post.slug}   // ✅ 用字符串 slug
                 className="bg-white rounded-lg shadow hover:shadow-lg transition overflow-hidden"
               >
                 {post.imageUrl && (
@@ -83,7 +83,7 @@ export default function BlogPage() {
                 )}
                 <div className="p-4">
                   <Link
-                    href={`/blog/${post.slug.current}`}
+                    href={`/blog/${post.slug}`}   // ✅ 不要再写 .current
                     className="text-xl font-semibold text-gray-900 hover:text-blue-600"
                   >
                     {post.title?.[lang] || post.title?.en}
@@ -92,10 +92,10 @@ export default function BlogPage() {
                     {new Date(post.publishedAt).toDateString()}
                   </p>
                   <p className="text-gray-700 mt-2 line-clamp-3">
-                    {/* 摘要这里可以从 body[lang] 里提取前几行 */}
+                    {/* 摘要：取正文前几行 */}
                     {post.body?.[lang]
-                      ? post.body[lang][0]?.children[0]?.text
-                      : post.body?.en?.[0]?.children[0]?.text}
+                      ? post.body[lang][0]?.children?.[0]?.text
+                      : post.body?.en?.[0]?.children?.[0]?.text}
                   </p>
                 </div>
               </div>
@@ -112,7 +112,7 @@ export default function BlogPage() {
             </h2>
             <ul className="space-y-3">
               {posts.slice(0, 3).map((post) => (
-                <li key={post.slug.current} className="flex items-center space-x-3">
+                <li key={post.slug} className="flex items-center space-x-3">
                   {post.imageUrl && (
                     <img
                       src={post.imageUrl}
@@ -124,7 +124,7 @@ export default function BlogPage() {
                   )}
                   <div>
                     <Link
-                      href={`/blog/${post.slug.current}`}
+                      href={`/blog/${post.slug}`}
                       className="font-medium text-gray-800 hover:text-blue-600"
                     >
                       {post.title?.[lang] || post.title?.en}
